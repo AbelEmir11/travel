@@ -20,11 +20,11 @@ export default function AccommodationCard({ item, onClick }) {
   return (
     <div 
       onClick={onClick}
-      className={`group p-[0.375rem] bg-white/[0.02] border rounded-[2rem] hover:scale-[1.01] transition-all duration-500 cursor-pointer shadow-[0_20px_45px_-15px_rgba(0,0,0,0.5)] ${
-        hasDiscount ? "border-accent-blue/30 hover:border-accent-blue/50" : "border-white/5 hover:border-white/10"
+      className={`group p-1 bg-white/80 hover:bg-white border rounded-[2rem] hover:scale-[1.01] transition-all duration-300 cursor-pointer shadow-[0_10px_25px_-5px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] ${
+        hasDiscount ? "border-accent-blue/40 hover:border-accent-blue" : "border-slate-200 hover:border-slate-300"
       }`}
     >
-      <div className="bg-card-dark border border-white/5 rounded-[calc(2rem-0.375rem)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.07)] p-4 flex flex-col h-full">
+      <div className="bg-white border border-slate-100 rounded-[calc(2rem-0.25rem)] p-4 flex flex-col h-full">
         
         {/* Photo Gallery Container */}
         <div className="relative h-56 w-full rounded-2xl overflow-hidden mb-5 group/gallery">

@@ -122,8 +122,8 @@ export default function App() {
     <div className="min-h-[100dvh] bg-bg-dark text-slate-100 font-sans selection:bg-accent-blue/30 selection:text-accent-cyan relative overflow-hidden">
       
       {/* Global animated background nodes */}
-      <div className="absolute top-10 left-1/4 w-72 h-72 rounded-full bg-accent-blue/5 blur-[120px] pointer-events-none animate-orb-slow" />
-      <div className="absolute top-1/2 right-1/4 w-[500px] h-[500px] rounded-full bg-accent-cyan/[0.03] blur-[150px] pointer-events-none animate-orb-slower" />
+      <div className="absolute top-10 left-1/4 w-72 h-72 rounded-full bg-accent-blue/10 blur-[80px] opacity-40 pointer-events-none animate-orb-slow -z-10" />
+      <div className="absolute top-1/2 right-1/4 w-80 h-80 rounded-full bg-accent-cyan/10 blur-[80px] opacity-40 pointer-events-none animate-orb-slower -z-10" />
       
       {/* Float Navbar */}
       <Navbar 
@@ -142,6 +142,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
+            className="relative z-10"
           >
             {/* Hero section */}
             <Hero 
@@ -150,7 +151,7 @@ export default function App() {
             />
 
             {/* Catalog & Filter Section */}
-            <section id="catalog" className="max-w-7xl mx-auto px-4 md:px-8 py-24 scroll-mt-20">
+            <section id="catalog" className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-24 scroll-mt-20">
               
               {/* Section title & subtitle */}
               <div className="mb-12 text-left space-y-3">

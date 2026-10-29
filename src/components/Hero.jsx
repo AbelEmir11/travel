@@ -86,9 +86,9 @@ export default function Hero({ accommodations = [], onSelectAccommodation }) {
               <div 
                 key={item.id}
                 onClick={() => onSelectAccommodation(item)}
-                className="flex-shrink-0 w-[280px] sm:w-[320px] snap-start double-bezel-outer cursor-pointer transform hover:-translate-y-2 transition-transform duration-500"
+                className="flex-shrink-0 w-[280px] sm:w-[320px] snap-start p-1 bg-white/80 hover:bg-white border border-slate-200 hover:border-slate-300 rounded-[2rem] shadow-[0_10px_25px_-5px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] cursor-pointer transform hover:-translate-y-1.5 transition-all duration-300"
               >
-                <div className="double-bezel-inner overflow-hidden p-3">
+                <div className="bg-white rounded-[calc(2rem-0.25rem)] overflow-hidden p-3 border border-slate-100">
                   {/* Image wrapper */}
                   <div className="relative h-48 w-full rounded-2xl overflow-hidden mb-4">
                     <img 

@@ -1,0 +1,842 @@
+# -*- coding: utf-8 -*-
+import os
+import subprocess
+
+html_content = """<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>TRAVEL - Documentación Proyecto Integrador</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+  
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    line-height: 1.55;
+    font-size: 10.5pt;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Portada / Cabecera institucional */
+  .cover-box {
+    border: 2px solid #0284c7;
+    border-radius: 12px;
+    padding: 24px 28px;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    margin-bottom: 28px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  }
+
+  .cover-title {
+    font-size: 24pt;
+    font-weight: 800;
+    color: #0369a1;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cover-subtitle {
+    font-size: 13pt;
+    color: #0f172a;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #bae6fd;
+    font-size: 9.5pt;
+  }
+
+  .meta-item strong {
+    color: #0369a1;
+  }
+
+  .team-list {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    border: 1px solid #bae6fd;
+    font-size: 9.5pt;
+  }
+
+  .team-list ul {
+    margin: 4px 0 0 0;
+    padding-left: 20px;
+  }
+
+  /* Encabezados de Secciones */
+  h1 {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #0f172a;
+    border-left: 5px solid #0284c7;
+    padding-left: 10px;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    page-break-after: avoid;
+  }
+
+  h2 {
+    font-size: 11.5pt;
+    font-weight: 700;
+    color: #0369a1;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+  }
+
+  p {
+    margin: 0 0 10px 0;
+    text-align: justify;
+  }
+
+  ul, ol {
+    margin: 0 0 12px 0;
+    padding-left: 22px;
+  }
+
+  li {
+    margin-bottom: 4px;
+  }
+
+  /* Tablas de Requerimientos y DER */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 18px 0;
+    font-size: 9pt;
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  th {
+    background-color: #0284c7;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: left;
+    padding: 7px 10px;
+    border: 1px solid #0284c7;
+  }
+
+  td {
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td {
+    background-color: #f8fafc;
+  }
+
+  /* Insignias y etiquetas */
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 8pt;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .badge-o { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; } /* Obligatorio */
+  .badge-i { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; } /* Importante */
+  .badge-d { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; } /* Deseable */
+  .badge-n { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; } /* No implementable */
+
+  .badge-role {
+    background: #e0e7ff;
+    color: #3730a3;
+    font-weight: 600;
+  }
+
+  /* Callout de Arquitectura */
+  .callout {
+    background: #f8fafc;
+    border-left: 4px solid #0284c7;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 9.5pt;
+  }
+
+  .callout-title {
+    font-weight: 700;
+    color: #0369a1;
+    margin-bottom: 4px;
+  }
+
+  /* Saltos de página estratégicos */
+  .page-break {
+    page-break-before: always;
+  }
+
+  /* Bloque de código / arquitectura */
+  pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 8.5pt;
+    overflow-x: hidden;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+
+<!-- PORTADA Y METADATOS INSTITUCIONALES -->
+<div class="cover-box">
+  <div class="cover-title">✈️ TRAVEL</div>
+  <div class="cover-subtitle">Plataforma Web Integral de Gestión y Reservas de Paquetes Turísticos</div>
+  <div style="font-weight: 700; color: #0284c7; text-transform: uppercase; font-size: 9pt; letter-spacing: 0.5px;">Documento de Especificación de Software y Arquitectura de Sistemas</div>
+  
+  <div class="meta-grid">
+    <div class="meta-item"><strong>Carrera:</strong> Tecnicatura Superior en Desarrollo de Software</div>
+    <div class="meta-item"><strong>Materia:</strong> Arquitectura y Diseño de Interfaces Gráficas</div>
+    <div class="meta-item"><strong>Profesor:</strong> Prof. Juan Caballero</div>
+    <div class="meta-item"><strong>Curso / Año Lectivo:</strong> 3ro 2da — Año 2026</div>
+  </div>
+
+  <div class="team-list">
+    <strong>Integrantes del Equipo y Distribución de Roles Técnicos:</strong>
+    <ul>
+      <li><strong>Alvarado, Abel:</strong> Backend Lead & Lógica de Negocio (Arquitectura Flask RESTful, Blueprints, Modelos y Control de Overbooking).</li>
+      <li><strong>Alvarado, Melanie:</strong> Frontend & UI/UX Lead (Diseño React 19, Tailwind CSS, navegación fluida y experiencia de reserva).</li>
+      <li><strong>Villegas, Mayra:</strong> DevOps, Base de Datos & QA Lead (Contenedorización Docker Compose, Migraciones y Suite de Pruebas Automatizadas).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 1. RESUMEN EJECUTIVO -->
+<h1>1. Resumen Ejecutivo</h1>
+<p>
+El presente proyecto integrador tiene como propósito diseñar, estructurar e implementar una solución web integral para la digitalización y gestión comercial de una agencia de turismo receptivo y nacional en la República Argentina. La plataforma <strong>TRAVEL</strong> unifica la oferta de hospedajes de alta gama, itinerarios exclusivos y paquetes todo incluido en una sola interfaz reactiva, garantizando un flujo de reserva seguro, validado en tiempo real y gestionado por roles diferenciados (Cliente, Administrador Comercial y Administrador General).
+</p>
+
+<!-- 2. MODELO DE NEGOCIO -->
+<h1>2. Modelo de Negocio Actual</h1>
+<p>
+Las agencias de turismo tradicionales suelen operar bajo esquemas descentralizados basados en planillas estáticas de cálculo, consultas informales por mensajería y procesos manuales de control de cupos. Esta fragmentación operativa genera inconsistencias en la disponibilidad, sobreventas involuntarias de habitaciones y lentitud en la confirmación de itinerarios. <strong>TRAVEL</strong> responde a este problema centralizando el catálogo de destinos con sincronización de inventario, cálculo automatizado de tarifas con promociones estacionales y un canal formal de confirmación de solicitudes de viaje.
+</p>
+
+<!-- 3. OBJETIVOS DEL SISTEMA -->
+<h1>3. Objetivos del Sistema</h1>
+<p><strong>Objetivo General:</strong> Desarrollar una plataforma web completa bajo arquitectura MVC desacoplada (Frontend reactivo SPA + Backend API RESTful) que automatice la publicación, comercialización y gestión de reservas de experiencias turísticas argentinas, asegurando interfaces estéticas, reactivas y confiables.</p>
+<p><strong>Objetivos Específicos:</strong></p>
+<ul>
+  <li>Centralizar y categorizar las experiencias turísticas (Solo Estadía, Viaje con Aventura y All Inclusive) con desglose de itinerarios y servicios.</li>
+  <li>Brindar a los clientes un buscador reactivo con filtros combinados por provincia, tipo de experiencia y tope de presupuesto.</li>
+  <li>Implementar un sistema de autenticación robusto basado en JSON Web Tokens (JWT) y cifrado criptográfico de contraseñas.</li>
+  <li>Prevenir de forma algorítmica el solapamiento de fechas y sobreventas (Overbooking) en el motor de reservas.</li>
+  <li>Proveer a la administración comercial y general tableros analíticos en tiempo real con métricas financieras y auditoría de personal.</li>
+</ul>
+
+<!-- 4. ACTORES DEL SISTEMA -->
+<h1>4. Actores del Sistema</h1>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Actor / Stakeholder</th>
+      <th>Descripción y Responsabilidades en el Sistema</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Cliente / Turista</strong></td>
+      <td>Usuario que explora el catálogo público, aplica filtros por provincia y presupuesto, crea su cuenta, inicia sesión y formaliza solicitudes de reserva accediendo a su historial personal en «Mis Reservas».</td>
+    </tr>
+    <tr>
+      <td><strong>Administrador Comercial</strong></td>
+      <td>Operador administrativo encargado de la gestión comercial del catálogo: alta/baja lógica de destinos, suspensión temporal de visibilidad en temporada baja, aplicación de descuentos promocionales (10%, 25%, 50% OFF) y actualización de estados operativos de reservas (Pendiente, Confirmada, Cancelada).</td>
+    </tr>
+    <tr>
+      <td><strong>Administrador General (SuperAdmin)</strong></td>
+      <td>Máxima autoridad técnica y directiva de la plataforma. Supervisa auditorías globales, monitorea ingresos acumulados mediante tableros analíticos con gráficos vectoriales nativos y administra las credenciales y roles del personal.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- 5. MATRIZ DINO -->
+<div class="page-break"></div>
+<h1>5. Necesidades Planteadas (Matriz DINO)</h1>
+<p>La priorización de requerimientos se estructuró bajo la metodología DINO (Obligatorio, Importante, Deseable, No Implementable) orientada al alcance del Proyecto Integrador:</p>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 6%;">N°</th>
+      <th style="width: 44%;">Necesidad Planteada</th>
+      <th style="width: 15%;">Clasificación</th>
+      <th>Justificación Técnica / Comercial</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Autenticación segura con JWT y roles jerárquicos</td>
+      <td><span class="badge badge-o">O (Obligatorio)</span></td>
+      <td>Pilar de seguridad; restringe endpoints administrativos y asocia reservas al cliente.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Catálogo público reactivo de experiencias y hoteles de Argentina</td>
+      <td><span class="badge badge-o">O (Obligatorio)</span></td>
+      <td>Núcleo de comercialización; exhibe tarifas base, fotos, itinerarios y servicios.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Paneles de control diferenciados (Comercial vs General)</td>
+      <td><span class="badge badge-o">O (Obligatorio)</span></td>
+      <td>Asegura el principio de mínimo privilegio entre operaciones comerciales y auditoría directiva.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>ABM integral de alojamientos y control de visibilidad</td>
+      <td><span class="badge badge-o">O (Obligatorio)</span></td>
+      <td>Permite pausar o reactivar destinos según temporadas sin eliminar datos históricos.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Filtros reactivos (por provincia, tipo de viaje y presupuesto)</td>
+      <td><span class="badge badge-i">I (Importante)</span></td>
+      <td>Optimiza sustancialmente la experiencia de usuario (UX) en la localización del hospedaje.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Motor de reservas con validación de fechas y cálculo de tarifas</td>
+      <td><span class="badge badge-i">I (Importante)</span></td>
+      <td>Calcula noches efectivas, descuentos porcentuales vigentes y tasas de servicio de forma exacta.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Prevención algorítmica de solapamiento de fechas (Anti-Overbooking)</td>
+      <td><span class="badge badge-i">I (Importante)</span></td>
+      <td>Rechaza con código HTTP 409 solicitudes sobre rangos previamente ocupados.</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Tablero de Analítica Financiera con gráficos vectoriales SVG nativos</td>
+      <td><span class="badge badge-i">I (Importante)</span></td>
+      <td>Provee curvas mensuales de facturación y distribución de reservas por provincia en tiempo real.</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>Pasarela de pago online 100% bancarizada con tarjeta</td>
+      <td><span class="badge badge-d">D (Deseable)</span></td>
+      <td>En esta primera versión la reserva se formaliza con código y confirmación administrativa manual.</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>Asistente virtual conversacional con IA para soporte 24/7</td>
+      <td><span class="badge badge-n">N (No Impl.)</span></td>
+      <td>Excede el alcance operativo y requerimientos de la cátedra de Interfaces Gráficas.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- 6. REQUERIMIENTOS FUNCIONALES -->
+<h1>6. Requerimientos Funcionales (RF)</h1>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 12%;">Código</th>
+      <th style="width: 38%;">Requerimiento Funcional</th>
+      <th>Detalle de Implementación en el Sistema</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>RF 1</strong></td>
+      <td>Registro de usuarios seguro</td>
+      <td>Creación de cuentas con nombre, correo electrónico único y validación de contraseña mínima de 6 caracteres.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 2</strong></td>
+      <td>Autenticación e inicio de sesión</td>
+      <td>Validación de credenciales con emisión de Bearer Token JWT para el consumo de la API REST.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 3</strong></td>
+      <td>Cifrado criptográfico de contraseñas</td>
+      <td>Hasheo irreversible de claves mediante el algoritmo Werkzeug Scrypt antes de almacenar en base de datos.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 4</strong></td>
+      <td>Catálogo público reactivo</td>
+      <td>Renderizado de tarjetas con precio por noche, calificación, insignias de descuento y galería de imágenes.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 5</strong></td>
+      <td>Modal interactivo de detalle</td>
+      <td>Apertura de cajón lateral con carrusel fotográfico, lista de actividades del itinerario y comodidades incluidas.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 6</strong></td>
+      <td>Filtros combinados de búsqueda</td>
+      <td>Filtrado simultáneo por provincia de Argentina, rango de precio máximo y categoría de experiencia turística.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 7</strong></td>
+      <td>Generación de solicitudes de reserva</td>
+      <td>Registro de reserva vinculada al usuario autenticado, indicando fechas de entrada/salida y cantidad de huéspedes.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 8</strong></td>
+      <td>Validación de coherencia temporal</td>
+      <td>Comprobación de que la fecha de check-in sea igual o posterior al día actual y que el check-out sea estrictamente posterior al check-in.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 9</strong></td>
+      <td>Control algorítmico de Overbooking</td>
+      <td>El backend rechaza con estado 409 solicitudes cuyas fechas se crucen con reservas ya confirmadas o pendientes del mismo hotel.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 10</strong></td>
+      <td>Historial de reservas del cliente</td>
+      <td>Vista exclusiva «Mis Reservas» con el costo total liquidado, estado actual (Pendiente, Confirmada, Cancelada) y detalles.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 11</strong></td>
+      <td>Cancelación de reservas por el cliente</td>
+      <td>El turista puede dar de baja reservas pendientes desde su panel personal, liberando inmediatamente las fechas bloqueadas.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 12</strong></td>
+      <td>Control de visibilidad del catálogo</td>
+      <td>El administrador comercial puede pausar destinos para ocultarlos temporalmente del catálogo público sin borrarlos de la BD.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 13</strong></td>
+      <td>Gestión de promociones estacionales</td>
+      <td>Aplicación instantánea de descuentos (10%, 25%, 50% OFF) recalculando la tarifa neta mostrada a los visitantes.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 14</strong></td>
+      <td>ABM completo de hospedajes</td>
+      <td>Endpoints REST para creación (POST), modificación (PUT) y eliminación definitiva (DELETE) de experiencias turísticas.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 15</strong></td>
+      <td>Gestión administrativa de reservas</td>
+      <td>El personal operativo puede listar todas las reservas globales y cambiar su estado a «Confirmada» o «Cancelada».</td>
+    </tr>
+    <tr>
+      <td><strong>RF 16</strong></td>
+      <td>Administración de roles de usuario</td>
+      <td>El Administrador General puede promover o degradar roles (cliente, comercial, general) desde una tabla reactiva en vivo.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 17</strong></td>
+      <td>Protección contra auto-degradación</td>
+      <td>El sistema impide que el único Administrador General del sistema se retire su propio rol, resguardando el acceso de auditoría.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 18</strong></td>
+      <td>Métricas financieras en tiempo real</td>
+      <td>Cálculo dinámico de ingresos totales acumulados, tasa de conversión estimada y comparativa porcentual de facturación mensual.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 19</strong></td>
+      <td>Gráficos analíticos vectoriales</td>
+      <td>Gráfico de barras SVG nativo para ingresos mes a mes y gráfico de donut para la distribución de demanda por provincia.</td>
+    </tr>
+    <tr>
+      <td><strong>RF 20</strong></td>
+      <td>Persistencia de sesión segura</td>
+      <td>El frontend detecta la presencia del token JWT en localStorage al refrescar la pantalla y restaura el perfil y vista adecuada.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- 7. REQUERIMIENTOS NO FUNCIONALES -->
+<div class="page-break"></div>
+<h1>7. Requerimientos No Funcionales (RNF)</h1>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 12%;">Código</th>
+      <th style="width: 32%;">Requerimiento No Funcional</th>
+      <th>Criterio de Aceptación y Estándar Técnico</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>RNF 1</strong></td>
+      <td>Diseño Responsive Adaptable</td>
+      <td>La interfaz se adapta fluidamente a teléfonos móviles, tablets y escritorios mediante grillas CSS y Tailwind v4.</td>
+    </tr>
+    <tr>
+      <td><strong>RNF 2</strong></td>
+      <td>Tiempo de respuesta eficiente</td>
+      <td>Tiempos de respuesta inferiores a 1.5 segundos en la carga inicial y menos de 100 ms en el filtrado reactivo del catálogo.</td>
+    </tr>
+    <tr>
+      <td><strong>RNF 3</strong></td>
+      <td>Arquitectura Desacoplada</td>
+      <td>Separación estricta entre capa cliente (SPA en React 19) y capa servidora (API RESTful en Flask con Blueprints).</td>
+    </tr>
+    <tr>
+      <td><strong>RNF 4</strong></td>
+      <td>Compatibilidad Cruzada</td>
+      <td>Funcionamiento y renderizado visual idéntico garantizado en Google Chrome, Microsoft Edge, Mozilla Firefox y Safari.</td>
+    </tr>
+    <tr>
+      <td><strong>RNF 5</strong></td>
+      <td>Micro-animaciones ergonómicas</td>
+      <td>Transiciones suaves con Framer Motion en apertura de modales, tarjetas y retroalimentación interactiva (toasts).</td>
+    </tr>
+    <tr>
+      <td><strong>RNF 6</strong></td>
+      <td>Resiliencia en persistencia</td>
+      <td>Soporte dual de base de datos relacional: conexión directa con MySQL 8.0 y fallback transparente a SQLite para desarrollo sin fallos.</td>
+    </tr>
+    <tr>
+      <td><strong>RNF 7</strong></td>
+      <td>Calidad y Cobertura de Pruebas</td>
+      <td>Suite de 9 pruebas automatizadas unitarias ejecutadas sobre base de datos en memoria (100% de aprobación en ~1 segundo).</td>
+    </tr>
+    <tr>
+      <td><strong>RNF 8</strong></td>
+      <td>Reproducibilidad con Docker</td>
+      <td>Configuración completa en Docker Compose que orquesta contenedores para MySQL, Flask API y Frontend Web con un solo comando.</td>
+    </tr>
+    <tr>
+      <td><strong>RNF 9</strong></td>
+      <td>Seguridad en Comunicaciones</td>
+      <td>Headers de seguridad CORS configurados y protección de endpoints mediante decorador personalizado <code>@role_required</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>RNF 10</strong></td>
+      <td>Integración Continua (CI/CD)</td>
+      <td>Workflow automatizado con GitHub Actions para correr la suite de pruebas en cada push o pull request al repositorio.</td>
+    </tr>
+    <tr>
+      <td><strong>RNF 11</strong></td>
+      <td>Mantenibilidad de Código</td>
+      <td>Estructura modular dividida en controladores (<code>routes/</code>), lógica de dominio (<code>services/</code>) y utilidades (<code>utils/</code>).</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- 8. HISTORIAS DE USUARIO -->
+<h1>8. Historias de Usuario (HU)</h1>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 10%;">ID</th>
+      <th style="width: 25%;">Rol</th>
+      <th style="width: 40%;">Historia de Usuario (Quiero / Para)</th>
+      <th>Criterio de Aceptación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>HU 01</strong></td>
+      <td>Visitante</td>
+      <td>Quiero registrarme con mi correo y contraseña para acceder a la reserva de hospedajes.</td>
+      <td>El formulario valida email válido, contraseña $\ge$ 6 caracteres y emite token JWT inmediato.</td>
+    </tr>
+    <tr>
+      <td><strong>HU 02</strong></td>
+      <td>Turista</td>
+      <td>Quiero filtrar por provincia y presupuesto máximo para encontrar un viaje acorde a mis posibilidades.</td>
+      <td>El catálogo se refresca al instante sin recargar la página conforme se desplaza el slider de precio.</td>
+    </tr>
+    <tr>
+      <td><strong>HU 03</strong></td>
+      <td>Turista</td>
+      <td>Quiero ver el itinerario completo y comodidades de un hotel para conocer los servicios incluidos.</td>
+      <td>Al pulsar la tarjeta se despliega el cajón lateral con fotos, lista de actividades y amenidades.</td>
+    </tr>
+    <tr>
+      <td><strong>HU 04</strong></td>
+      <td>Cliente logueado</td>
+      <td>Quiero solicitar una reserva indicando check-in y check-out para asegurar mi alojamiento.</td>
+      <td>El sistema valida que no haya sobreventa de fechas, calcula el precio total con tasas y guarda en estado «Pendiente».</td>
+    </tr>
+    <tr>
+      <td><strong>HU 05</strong></td>
+      <td>Cliente</td>
+      <td>Quiero cancelar una reserva que ya no usaré para liberar el cupo.</td>
+      <td>Botón «Cancelar Reserva» en «Mis Reservas» que actualiza el estado a «Cancelada» de inmediato.</td>
+    </tr>
+    <tr>
+      <td><strong>HU 06</strong></td>
+      <td>Admin Comercial</td>
+      <td>Quiero ocultar un hotel de la vista pública para gestionar temporada baja o mantenimiento.</td>
+      <td>Interruptor de visibilidad que modifica el campo booleano <code>activo</code> en la API REST.</td>
+    </tr>
+    <tr>
+      <td><strong>HU 07</strong></td>
+      <td>Admin Comercial</td>
+      <td>Quiero aplicar descuentos del 10%, 25% o 50% OFF para impulsar la venta de alojamientos destacados.</td>
+      <td>Selector que actualiza la tarifa base y muestra la insignia de oferta con precio tachado.</td>
+    </tr>
+    <tr>
+      <td><strong>HU 08</strong></td>
+      <td>Admin Comercial</td>
+      <td>Quiero aprobar reservas recibidas para formalizar la contratación de los clientes.</td>
+      <td>Listado con selector de estado para cambiar entre «Pendiente», «Confirmada» y «Cancelada».</td>
+    </tr>
+    <tr>
+      <td><strong>HU 09</strong></td>
+      <td>SuperAdmin</td>
+      <td>Quiero visualizar la facturación acumulada del año para monitorear el rendimiento del negocio.</td>
+      <td>Gráfico de barras SVG con los ingresos reales desglosados mes a mes y tarjeta de facturación total.</td>
+    </tr>
+    <tr>
+      <td><strong>HU 10</strong></td>
+      <td>SuperAdmin</td>
+      <td>Quiero modificar el rol de un colaborador para otorgar o remover permisos comerciales o de auditoría.</td>
+      <td>Tabla de personal con selector desplegable en vivo que actualiza el rol en la base de datos.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- 9. DIAGRAMA ENTIDAD RELACIÓN -->
+<div class="page-break"></div>
+<h1>9. Diagrama y Modelo Entidad-Relación (DER)</h1>
+<p>
+El diseño relacional fue optimizado bajo un <strong>modelo integrado de experiencias turísticas</strong>. En lugar de fragmentar artificialmente las consultas de destinos, hoteles y actividades en múltiples llamadas lentas, la entidad <code>alojamiento</code> unifica la oferta principal y se vincula relacionalmente con sus itinerarios (<code>actividad</code>), amenidades (<code>servicio</code>) y contratos de viaje (<code>reserva</code>), resguardando la integridad referencial mediante cascada de borrado (<code>CASCADE</code>).
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 15%;">Entidad</th>
+      <th style="width: 18%;">Clave Primaria (PK)</th>
+      <th style="width: 20%;">Claves Foráneas (FK)</th>
+      <th>Atributos Principales y Relaciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>usuario</strong></td>
+      <td><code>id</code> (Integer Autoincremental)</td>
+      <td>—</td>
+      <td><code>nombre</code> (Varchar 100), <code>email</code> (Varchar 120, Unique, Index), <code>password_hash</code> (Varchar 256), <code>rol</code> ('cliente', 'comercial', 'general'), <code>fecha_creacion</code> (DateTime). Relación 1:N con <code>reserva</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>alojamiento</strong></td>
+      <td><code>id</code> (Varchar 50 - Slug semántico)</td>
+      <td>—</td>
+      <td><code>titulo</code> (Varchar 150), <code>ubicacion</code> (Varchar 100), <code>provincia</code> (Varchar 100), <code>precio</code> (Int), <code>calificacion</code> (Float), <code>reviews_count</code> (Int), <code>imagenes_json</code> (Text), <code>tipo</code> ('estadia', 'viaje', 'all_inclusive'), <code>experience_label</code> (Varchar 100), <code>descripcion</code> (Text), <code>destacado</code> (Boolean), <code>activo</code> (Boolean), <code>descuento</code> (Int). Relación 1:N con <code>actividad</code>, <code>servicio</code> y <code>reserva</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>actividad</strong></td>
+      <td><code>id</code> (Integer Autoincremental)</td>
+      <td><code>alojamiento_id</code> $\rightarrow$ alojamiento.id (ON DELETE CASCADE)</td>
+      <td><code>descripcion</code> (Varchar 255). Itinerario y actividades exclusivas del alojamiento. Relación N:1 con <code>alojamiento</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>servicio</strong></td>
+      <td><code>id</code> (Integer Autoincremental)</td>
+      <td><code>alojamiento_id</code> $\rightarrow$ alojamiento.id (ON DELETE CASCADE)</td>
+      <td><code>nombre</code> (Varchar 150). Amenities incluidas (Piscina, Cava, Spa, Wifi, etc.). Relación N:1 con <code>alojamiento</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>reserva</strong></td>
+      <td><code>id</code> (Integer Autoincremental)</td>
+      <td><code>usuario_id</code> $\rightarrow$ usuario.id<br><code>alojamiento_id</code> $\rightarrow$ alojamiento.id</td>
+      <td><code>check_in</code> (Date), <code>check_out</code> (Date), <code>huespedes</code> (Int), <code>notes</code> (Text), <code>precio_total</code> (Int), <code>estado</code> ('pending', 'confirmed', 'cancelled'), <code>fecha_creacion</code> (DateTime). Relación N:1 con <code>usuario</code> y <code>alojamiento</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- 10. ARQUITECTURA DEL SISTEMA -->
+<h1>10. Diagrama de Arquitectura y Clases (MVC Desacoplado)</h1>
+<div class="callout">
+  <div class="callout-title">Patrón Arquitectónico Implementado: API-First Decoupled MVC</div>
+  La aplicación adopta una arquitectura desacoplada donde el <strong>Frontend (React SPA)</strong> y el <strong>Backend (Flask REST API)</strong> operan de forma independiente comunicándose mediante contratos JSON sobre protocolo HTTP.
+</div>
+
+<pre>
+┌────────────────────────────────────────────────────────────────────────┐
+│                        CAPA CLIENTE (FRONTEND SPA)                     │
+│  React 19 + Vite | Tailwind CSS v4 | Framer Motion | Phosphor Icons    │
+│                                                                        │
+│  [Navbar] ── [Hero] ── [Filters] ── [AccommodationCards] ── [Modals]   │
+│             ▲                                                          │
+│             │  Peticiones HTTP Asíncronas (Axios con Bearer JWT)       │
+└─────────────┼──────────────────────────────────────────────────────────┘
+              ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        CAPA SERVIDORA (BACKEND REST)                   │
+│  Flask Modular con Blueprints | JWT Manager | SQLAlchemy ORM           │
+│                                                                        │
+│  • routes/auth.py         -> /api/autenticacion (Registro, Login)      │
+│  • routes/alojamientos.py -> /api/alojamientos (CRUD, Visibilidad)     │
+│  • routes/reservas.py     -> /api/reservas (Anti-Overbooking, Cancel)  │
+│  • routes/admin.py        -> /api/admin (KPIs Dinámicos, Roles)        │
+│                                                                        │
+│  Lógica de Dominio: booking_service.py  |  stats_service.py            │
+└─────────────┬──────────────────────────────────────────────────────────┘
+              ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        CAPA DE PERSISTENCIA (DATOS)                    │
+│  MySQL 8.0 (Docker / Workbench)  <--->  Fallback Seguro: SQLite 3      │
+└────────────────────────────────────────────────────────────────────────┘
+</pre>
+
+<!-- 11. MAPEO MODELOS Y FRONTEND -->
+<div class="page-break"></div>
+<h1>11. Mapeo de Modelos Backend (Flask) y Componentes Frontend (React)</h1>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 20%;">Modelo Backend (models.py)</th>
+      <th style="width: 40%;">Endpoints REST Consumidos</th>
+      <th>Componentes Visuales de la Interfaz</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Usuario</strong></td>
+      <td><code>POST /api/autenticacion/registro</code><br><code>POST /api/autenticacion/ingreso</code><br><code>GET /api/autenticacion/perfil</code><br><code>PUT /api/admin/usuarios/&lt;id&gt;/rol</code></td>
+      <td><code>AuthModal.jsx</code> (Formularios interactivos con pestañas de login/registro).<br><code>Navbar.jsx</code> (Identificador de usuario logueado y dropdown de cierre de sesión).<br><code>AdminGeneralDashboard.jsx</code> (Tabla de gestión de roles de personal).</td>
+    </tr>
+    <tr>
+      <td><strong>Alojamiento</strong></td>
+      <td><code>GET /api/alojamientos</code><br><code>GET /api/alojamientos/&lt;id&gt;</code><br><code>POST /api/alojamientos</code> (Crear)<br><code>PUT /api/alojamientos/&lt;id&gt;/visibilidad</code><br><code>PUT /api/alojamientos/&lt;id&gt;/promocion</code></td>
+      <td><code>Hero.jsx</code> (Buscador rápido de destinos de Argentina).<br><code>Filters.jsx</code> (Filtros por provincia, presupuesto y modalidad de viaje).<br><code>AccommodationCard.jsx</code> (Tarjetas interactivas con insignias y fotos).<br><code>AdminComercialDashboard.jsx</code> (Gestor de visibilidad y descuentos en vivo).</td>
+    </tr>
+    <tr>
+      <td><strong>Actividad & Servicio</strong></td>
+      <td>Servidos anidados dentro del payload serializado de <code>GET /api/alojamientos/&lt;id&gt;</code></td>
+      <td><code>DetailModal.jsx</code> (Cajón lateral emergente que lista el cronograma de actividades exclusivas y la iconografía de amenidades disponibles).</td>
+    </tr>
+    <tr>
+      <td><strong>Reserva</strong></td>
+      <td><code>POST /api/reservas</code> (Crear con anti-overbooking)<br><code>GET /api/reservas</code> (Mis reservas)<br><code>PUT /api/reservas/&lt;id&gt;/cancelar</code><br><code>GET /api/admin/reservas</code><br><code>PUT /api/admin/reservas/&lt;id&gt;/estado</code></td>
+      <td><code>DetailModal.jsx</code> (Formulario con validación de fechas, cálculo automático de costo final por noches e input de notas).<br><code>MisReservas.jsx</code> (Historial del cliente con estado, detalles y botón de cancelación).<br><code>AdminGeneralDashboard.jsx</code> (Cálculo de métricas financieras y facturación mensual).</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- 12. MANUAL DE USO DEL SISTEMA -->
+<h1>12. Manual de Uso del Sistema</h1>
+
+<h2>12.1 Flujo para Clientes y Turistas</h2>
+<ol>
+  <li><strong>Exploración del Catálogo:</strong> El usuario ingresa a la portada principal. En la barra de filtros puede seleccionar su destino preferido (Mendoza, Bariloche, Iguazú, Salta, Ushuaia, etc.), acotar su presupuesto máximo mediante el control deslizante o filtrar por tipo de viaje (Solo estadía, Viaje con Aventura o All Inclusive).</li>
+  <li><strong>Inspección del Hospedaje:</strong> Al hacer clic en «Ver Experiencia» sobre una tarjeta, se abre el cajón lateral con carrusel fotográfico, especificación de actividades incluidas (catas de vino, trekkings, navegaciones) y comodidades (spa, wifi, piscina).</li>
+  <li><strong>Autenticación y Registro:</strong> Si el usuario no ha iniciado sesión, presiona «Iniciar Sesión» en el menú superior o en la reserva. En un modal emergente puede ingresar con su cuenta o registrarse completando nombre, email y contraseña.</li>
+  <li><strong>Confirmación de Reserva:</strong> Con sesión iniciada, el cliente selecciona fecha de entrada y salida, especifica número de pasajeros y notas de preferencia. Al confirmar, el sistema valida la disponibilidad temporal y calcula el precio final exacto con descuentos e impuestos.</li>
+  <li><strong>Gestión en «Mis Reservas»:</strong> En el menú superior accede a su historial completo, donde puede verificar el estado de su viaje (Pendiente, Confirmada) o presionar «Cancelar Reserva» si decide no viajar.</li>
+</ol>
+
+<h2>12.2 Flujo para Administrador Comercial</h2>
+<ol>
+  <li><strong>Acceso con Rol Comercial:</strong> Al iniciar sesión con credenciales comerciales (ej. <code>comercial@travel.com</code>), el sistema redirecciona automáticamente a la vista de gestión comercial.</li>
+  <li><strong>Control de Visibilidad:</strong> El operador cuenta con un interruptor instantáneo en cada ficha para activar o desactivar la visibilidad de los alojamientos según la temporada turística.</li>
+  <li><strong>Fijación de Promociones:</strong> Mediante botones de acceso rápido, puede aplicar ofertas instantáneas del 10%, 25% o 50% OFF, recalculando las tarifas del catálogo de forma inmediata.</li>
+  <li><strong>Seguimiento de Reservas:</strong> Consulta las solicitudes entrantes y aprueba formalmente las reservas recibidas.</li>
+</ol>
+
+<h2>12.3 Flujo para Administrador General (SuperAdmin)</h2>
+<ol>
+  <li><strong>Tablero Financiero y Analítica:</strong> Al ingresar con rol general (ej. <code>admin@travel.com</code>), accede al panel de control central. Visualiza tarjetas KPI con ingresos totales acumulados, total de reservas concretadas, tasa de conversión estimada y comparativa porcentual de facturación del mes actual versus el mes previo.</li>
+  <li><strong>Gráficos Vectoriales Nativos:</strong> Examina el gráfico de barras SVG que detalla la facturación mensual acumulada durante el año y el gráfico circular de distribución de reservas por provincia argentina.</li>
+  <li><strong>Auditoría y Gestión de Roles:</strong> En la sección inferior, consulta la nómina completa de usuarios del sistema y dispone de selectores desplegables para promover o degradar roles en vivo con validación de seguridad.</li>
+</ol>
+
+<!-- 13. ENLACES Y VERIFICACIÓN -->
+<div class="page-break"></div>
+<h1>13. Enlaces al Código Fuente y Verificación de Calidad</h1>
+<p>El código fuente completo de la plataforma <strong>TRAVEL</strong> se encuentra disponible en los siguientes repositorios públicos de GitHub:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Componente del Sistema</th>
+      <th style="width: 30%;">Tecnología Principal</th>
+      <th>Enlace al Repositorio en GitHub</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Frontend Web</strong></td>
+      <td>React 19, Vite, Tailwind CSS v4, Framer Motion</td>
+      <td><a href="https://github.com/AbelEmir11/travel.git" style="color:#0284c7; text-decoration: none; font-weight: 600;">https://github.com/AbelEmir11/travel.git</a></td>
+    </tr>
+    <tr>
+      <td><strong>Backend API REST</strong></td>
+      <td>Python 3.13, Flask Modular (Blueprints), SQLAlchemy, JWT</td>
+      <td><a href="https://github.com/AbelEmir11/travel-backend.git" style="color:#0284c7; text-decoration: none; font-weight: 600;">https://github.com/AbelEmir11/travel-backend.git</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Verificación Automatizada de Calidad (Testing Suite)</h2>
+<p>
+Para garantizar la fiabilidad del software exigida en una cátedra universitaria, el sistema cuenta con una batería de <strong>9 pruebas unitarias automatizadas</strong> que verifican los módulos críticos de autenticación, seguridad de contraseñas, cálculo de tarifas con descuentos y el algoritmo de prevención de sobreventas:
+</p>
+<pre>
+PS C:\proyectos_vscode\travel\travel-backend> .\venv\Scripts\python -m unittest discover tests
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 1.058s
+
+OK (Tests pasaron al 100% exitosamente sobre SQLite en memoria)
+</pre>
+
+<h2>Despliegue Contenedorizado con Docker Compose</h2>
+<p>
+La plataforma dispone de archivos <code>Dockerfile</code> y un manifiesto <code>docker-compose.yml</code> unificado que orquesta los tres servicios del sistema (Base de datos MySQL 8.0, Backend API en Flask y Frontend Web en Nginx) con un solo comando de terminal:
+</p>
+<pre>
+docker compose up --build
+</pre>
+
+<div style="margin-top: 30px; text-align: center; color: #64748b; font-size: 8.5pt; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+  TRAVEL Plataforma Web Integral — Proyecto Integrador — Carrera de Tecnicatura Superior en Desarrollo de Software — 2026
+</div>
+
+</body>
+</html>
+"""
+
+html_path = os.path.abspath("TRAVEL_Documentacion_Oficial.html")
+pdf_path = os.path.abspath("TRAVEL_Documentacion_Proyecto_Integrador.pdf")
+
+with open(html_path, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print(f"HTML generado en: {html_path}")
+
+chrome_exe = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+cmd = [
+    chrome_exe,
+    "--headless",
+    "--disable-gpu",
+    "--no-sandbox",
+    f"--print-to-pdf={pdf_path}",
+    f"file:///{html_path.replace(os.sep, '/')}"
+]
+
+print("Compilando a PDF con Google Chrome headless...")
+res = subprocess.run(cmd, capture_output=True, text=True)
+if os.path.exists(pdf_path):
+    print(f"PDF generado exitosamente en: {pdf_path}")
+    print(f"Tamano del PDF: {os.path.getsize(pdf_path)} bytes")
+else:
+    print("Error al generar el PDF:")
+    print(res.stderr)
